@@ -12,6 +12,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #FF8C94;
+            --primary-dark: #ff6b78;
             --secondary: #FFF5F5;
             --accent: #4A90A4;
             --dark: #2D3436;
@@ -21,13 +22,25 @@
         }
         body {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/images/image.jpg') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
             padding: 2rem;
         }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
         .container { max-width: 1200px; margin: 0 auto; }
         header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1.5rem 2rem;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -36,14 +49,14 @@
             justify-content: space-between;
             align-items: center;
         }
-        h1 { color: var(--dark); font-size: 1.8rem; }
+        h1 { color: #fff; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .btn {
             display: inline-block;
             padding: 0.8rem 1.5rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
             cursor: pointer;
             border: none;
             font-size: 0.9rem;
@@ -52,60 +65,153 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 140, 148, 0.5); }
         .admin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        .card h2 { color: var(--dark); margin-bottom: 1.5rem; font-size: 1.4rem; }
+        .card h2 { color: #fff; margin-bottom: 1.5rem; font-size: 1.4rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 600; }
+        label { display: block; margin-bottom: 0.5rem; color: #fff; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         input, textarea {
             width: 100%;
             padding: 0.8rem 1rem;
-            border: 2px solid #eee;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             font-size: 1rem;
             font-family: inherit;
-            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s;
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.6); }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); background: rgba(255, 255, 255, 0.15); }
         .product-list { display: grid; gap: 1rem; }
         .product-item {
             display: flex;
             align-items: center;
             gap: 1rem;
             padding: 1rem;
-            background: var(--secondary);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: transform 0.3s;
         }
-        .product-item:hover { transform: translateX(5px); }
+        .product-item:hover { transform: translateX(5px); background: rgba(255, 255, 255, 0.15); }
         .product-icon { font-size: 2.5rem; width: 60px; text-align: center; }
         .product-details { flex: 1; }
-        .product-details h3 { color: var(--dark); font-size: 1.1rem; margin-bottom: 0.3rem; }
-        .product-details .price { color: var(--accent); font-weight: 700; }
+        .product-details h3 { color: #fff; font-size: 1.1rem; margin-bottom: 0.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .product-details .price { color: var(--primary); font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         .product-actions { display: flex; gap: 0.5rem; }
         .btn-edit { background: var(--accent); color: var(--light); padding: 0.5rem 1rem; font-size: 0.8rem; }
         .btn-delete { background: var(--danger); color: var(--light); padding: 0.5rem 1rem; font-size: 0.8rem; }
         .btn-save { background: var(--success); color: var(--light); width: 100%; margin-top: 1rem; }
-        .empty-state { text-align: center; padding: 3rem; color: #999; }
+        .empty-state { text-align: center; padding: 3rem; color: rgba(255, 255, 255, 0.7); }
         .toast {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
             padding: 1rem 2rem;
-            border-radius: 10px;
+            border-radius: 50px;
             color: white;
             font-weight: 600;
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s;
+            z-index: 9999;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
-        @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+        
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tab { 
+            padding: 0.8rem 1.5rem; 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #fff;
+            transition: all 0.3s;
+        }
+        .tab:hover { background: rgba(255,255,255,0.2); }
+        .tab.active { background: var(--primary); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .order-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px; 
+            padding: 1.5rem; 
+            margin-bottom: 1rem;
+        }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .order-id { font-weight: 700; color: #fff; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .order-status { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-confirmed { background: #3498db; color: white; }
+        .status-shipped { background: #9b59b6; color: white; }
+        .status-delivered { background: var(--success); color: white; }
+        .status-cancelled { background: var(--danger); color: white; }
+        
+        .order-details { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 1rem;
+            font-size: 0.9rem; 
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .order-details strong { color: #fff; }
+        
+        .order-items { 
+            margin: 0.5rem 0; 
+            padding: 1rem; 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 10px;
+            display: grid;
+            gap: 0.5rem;
+            color: #fff;
+        }
+        .order-item { display: flex; justify-content: space-between; align-items: center; }
+        
+        .order-footer { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 1rem; 
+            padding-top: 1rem; 
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .order-total { font-weight: 700; color: var(--primary); font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .order-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .btn-status { 
+            padding: 0.5rem 1rem; 
+            font-size: 0.8rem; 
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            color: white; 
+            transition: transform 0.2s;
+        }
+        .btn-status:hover { transform: scale(1.05); }
+        
+        @media (max-width: 900px) { 
+            .admin-grid { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+            .tabs { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -117,38 +223,56 @@
                 <button onclick="logout()" class="btn btn-delete">Logout</button>
             </div>
         </header>
-        <div class="admin-grid">
-            <div class="card">
-                <h2>Add / Edit Product</h2>
-                <form id="productForm">
-                    <input type="hidden" id="productId">
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" id="productName" required placeholder="e.g., Cozy Cat Bed">
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('products')">Products</button>
+            <button class="tab" onclick="switchTab('orders')">Orders</button>
+        </div>
+        
+        <div id="productsTab" class="tab-content active">
+            <div class="admin-grid">
+                <div class="card">
+                    <h2>Add / Edit Product</h2>
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input type="text" id="productName" required placeholder="e.g., Cozy Cat Bed">
+                        </div>
+                        <div class="form-group">
+                            <label>Price ($)</label>
+                            <input type="number" id="productPrice" step="0.01" required placeholder="e.g., 29.99">
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (Emoji)</label>
+                            <input type="text" id="productIcon" required placeholder="🛏️" value="🛏️">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Product description..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-save" id="saveBtn">Add Product</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Existing Products</h2>
+                    <div id="productList" class="product-list">
+                        <div class="empty-state">Loading products...</div>
                     </div>
-                    <div class="form-group">
-                        <label>Price ($)</label>
-                        <input type="number" id="productPrice" step="0.01" required placeholder="e.g., 29.99">
-                    </div>
-                    <div class="form-group">
-                        <label>Icon (Emoji)</label>
-                        <input type="text" id="productIcon" required placeholder="🛏️" value="🛏️">
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="productDescription" rows="3" placeholder="Product description..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-save" id="saveBtn">Add Product</button>
-                </form>
+                </div>
             </div>
+        </div>
+        
+        <div id="ordersTab" class="tab-content">
             <div class="card">
-                <h2>Existing Products</h2>
-                <div id="productList" class="product-list">
-                    <div class="empty-state">Loading products...</div>
+                <h2>All Orders</h2>
+                <div id="orderList">
+                    <div class="empty-state">Loading orders...</div>
                 </div>
             </div>
         </div>
     </div>
+    
     <div id="toast" class="toast"></div>
 
     <script>
@@ -266,6 +390,80 @@
             toast.textContent = message;
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.className = 'toast', 3000);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'products') {
+                document.querySelector('.tab:first-child').classList.add('active');
+                document.getElementById('productsTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:last-child').classList.add('active');
+                document.getElementById('ordersTab').classList.add('active');
+                loadOrders();
+            }
+        }
+
+        function loadOrders() {
+            db.ref('orders').orderByChild('createdAt').on('value', (snapshot) => {
+                const orders = snapshot.val();
+                const container = document.getElementById('orderList');
+                
+                if (!orders) {
+                    container.innerHTML = '<div class="empty-state">No orders yet!</div>';
+                    return;
+                }
+
+                const ordersList = Object.entries(orders).reverse();
+                container.innerHTML = ordersList.map(([id, order]) => {
+                    const statusClass = 'status-' + order.status;
+                    const itemsHtml = order.items.map(item => 
+                        `<div class="order-item">
+                            <span>${item.icon} ${item.name} ×${item.quantity}</span>
+                            <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>`
+                    ).join('');
+                    
+                    const date = new Date(order.createdAt).toLocaleDateString() + ' ' + new Date(order.createdAt).toLocaleTimeString();
+
+                    return `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">#${id.substring(0, 8).toUpperCase()}</span>
+                                <span class="order-status ${statusClass}">${order.status.toUpperCase()}</span>
+                            </div>
+                            <div class="order-details">
+                                <div><strong>Customer:</strong> ${order.customer.name}</div>
+                                <div><strong>Phone:</strong> ${order.customer.phone}</div>
+                                <div><strong>Address:</strong> ${order.customer.address}</div>
+                                <div><strong>Payment:</strong> ${order.paymentMethod}</div>
+                                <div><strong>Date:</strong> ${date}</div>
+                            </div>
+                            <div class="order-items">
+                                ${itemsHtml}
+                            </div>
+                            <div class="order-footer">
+                                <span class="order-total">Total: $${order.total.toFixed(2)}</span>
+                                <div class="order-actions">
+                                    <button class="btn-status" style="background: #3498db;" onclick="updateOrderStatus('${id}', 'confirmed')">✓ Confirm</button>
+                                    <button class="btn-status" style="background: #9b59b6;" onclick="updateOrderStatus('${id}', 'shipped')">🚚 Ship</button>
+                                    <button class="btn-status" style="background: #27ae60;" onclick="updateOrderStatus('${id}', 'delivered')">✓ Delivered</button>
+                                    <button class="btn-status" style="background: #e74c3c;" onclick="updateOrderStatus('${id}', 'cancelled')">✕ Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function updateOrderStatus(orderId, status) {
+            if (!confirm(`Mark order as ${status}?`)) return;
+            db.ref('orders').child(orderId).update({ status: status })
+                .then(() => showToast(`Order marked as ${status}!`, 'success'))
+                .catch(() => showToast('Error updating order', 'error'));
         }
 
         loadProducts();

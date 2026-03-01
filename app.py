@@ -14,5 +14,21 @@ def admin():
 def login():
     return render_template('login.html')
 
+@app.route('/cart')
+def cart():
+    return render_template('cart.html')
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/product')
+def product():
+    return render_template('product.html')
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

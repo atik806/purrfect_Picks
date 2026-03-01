@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Purrfect Picks</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FF8C94;
+            --primary-dark: #ff6b78;
+            --accent: #4A90A4;
+            --dark: #2D3436;
+            --light: #FFFFFF;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --gray: #636e72;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/images/image.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding-bottom: 4rem;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: #fff; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .cart-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        h1 { color: #fff; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .cart-item:hover { transform: translateX(5px); background: rgba(255, 255, 255, 0.15); }
+        .item-icon { font-size: 3rem; width: 80px; text-align: center; background: rgba(255, 255, 255, 0.2); border-radius: 15px; padding: 0.5rem; }
+        .item-details { flex: 1; }
+        .item-details h3 { color: #fff; margin-bottom: 0.3rem; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .item-price { color: var(--primary); font-weight: 700; font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .quantity-controls { display: flex; align-items: center; gap: 0.8rem; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 25px; }
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .qty-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
+        .item-quantity { font-weight: 700; min-width: 30px; text-align: center; font-size: 1.1rem; color: #fff; }
+        
+        .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .remove-btn:hover { background: #c0392b; }
+        
+        .cart-summary {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .total { font-size: 1.8rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .total span { color: var(--primary); font-weight: 700; }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: var(--light); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 140, 148, 0.4); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.2); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.3); }
+        
+        .empty-cart { text-align: center; padding: 4rem 2rem; }
+        .empty-cart h2 { color: #fff; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .empty-cart p { color: rgba(255, 255, 255, 0.8); margin-bottom: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .continue-shopping { display: inline-block; margin-top: 1rem; color: var(--primary); text-decoration: none; font-weight: 600; }
+        .continue-shopping:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .cart-item { flex-wrap: wrap; text-align: center; justify-content: center; }
+            .item-details { order: 2; width: 100%; margin-top: 1rem; }
+            .quantity-controls { order: 3; }
+            .remove-btn { order: 4; margin-top: 0.5rem; }
+            .cart-summary { flex-direction: column; text-align: center; }
+            .cart-summary .btn { width: 100%; margin-bottom: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo" onclick="window.location.href='/'">🐱 Purrfect Picks</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#products">Products</a></li>
+            <li><a href="/login">Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="cart-container">
+            <h1>🛒 Your Shopping Cart</h1>
+            <div id="cartItems"></div>
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <div class="total">Total: <span id="cartTotal">$0.00</span></div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="/#products" class="btn btn-secondary">Continue Shopping</a>
+                    <button class="btn btn-primary" onclick="proceedToCheckout()">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
+            authDomain: "catproduct-f6852.firebaseapp.com",
+            databaseURL: "https://catproduct-f6852-default-rtdb.firebaseio.com",
+            projectId: "catproduct-f6852",
+            storageBucket: "catproduct-f6852.firebasestorage.app",
+            messagingSenderId: "200540639100",
+            appId: "1:200540639100:web:25190faf57c90210329ef9",
+            measurementId: "G-83ZTP8EC0H"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const container = document.getElementById('cartItems');
+            const summary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">😿</div>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any items yet!</p>
+                        <a href="/#products" class="btn btn-primary">Start Shopping</a>
+                    </div>`;
+                summary.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-details">
+                        <h3>${item.name}</h3>
+                        <div class="item-price">$${parseFloat(item.price).toFixed(2)} each</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                        <span class="item-quantity">${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                            $${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cartTotal').textContent = '$' + total.toFixed(2);
+            summary.style.display = 'flex';
+        }
+
+        function updateQuantity(index, change) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function removeItem(index) {
+            if (!confirm('Remove this item from cart?')) return;
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function proceedToCheckout() {
+            window.location.href = '/checkout';
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>

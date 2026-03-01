@@ -12,96 +12,217 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #FF8C94;
-            --secondary: #FFF5F5;
+            --primary-dark: #ff6b78;
             --accent: #4A90A4;
             --dark: #2D3436;
             --light: #FFFFFF;
+            --gray: #636e72;
         }
         body {
             font-family: 'Nunito', sans-serif;
-            color: var(--dark);
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/images/image.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
         }
+        
         .glass {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
+        
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem 5%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
         .nav-links a { text-decoration: none; color: #fff; font-weight: 600; transition: color 0.3s; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         .nav-links a:hover { color: var(--primary); }
-        .hero { display: flex; align-items: center; justify-content: center; padding: 4rem 5%; min-height: 70vh; text-align: center; }
-        .hero-content { max-width: 700px; padding: 3rem; border-radius: 30px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); }
+        
+        .mobile-menu { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .mobile-menu span { width: 25px; height: 3px; background: #fff; border-radius: 2px; }
+        
+        .hero { display: flex; align-items: center; justify-content: center; padding: 4rem 5%; min-height: 80vh; text-align: center; }
+        .hero-content { 
+            max-width: 700px; 
+            padding: 3rem; 
+            border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2); 
+        }
         .hero h1 { font-size: 3rem; margin-bottom: 1rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .hero h1 span { color: var(--primary); }
         .hero p { font-size: 1.2rem; color: #fff; margin-bottom: 2rem; line-height: 1.6; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.3s; cursor: pointer; border: none; }
         .btn-primary { background: var(--primary); color: var(--light); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 140, 148, 0.5); }
-        .features { padding: 4rem 5%; background: rgba(255, 255, 255, 0.1); }
-        .features h2 { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-        .feature-card { text-align: center; padding: 2rem; border-radius: 20px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.3s; color: #fff; }
-        .feature-card:hover { transform: translateY(-10px); }
-        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .feature-card h3 { margin-bottom: 0.5rem; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 140, 148, 0.4); }
+        
         .products { padding: 4rem 5%; max-width: 1200px; margin: 0 auto; }
-        .products h2 { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
-        .product-card { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); transition: transform 0.3s; }
-        .product-card:hover { transform: translateY(-5px); }
-        .product-image { height: 180px; background: linear-gradient(135deg, rgba(255, 140, 148, 0.3), rgba(255, 255, 255, 0.2)); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+        .products h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .product-card { 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            transition: all 0.3s;
+        }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
+        .product-image { 
+            height: 180px; 
+            background: linear-gradient(135deg, rgba(255, 140, 148, 0.3), rgba(255, 255, 255, 0.2)); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 4rem; 
+        }
+        .product-info { padding: 1.5rem; }
+        .product-info h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .product-price { color: var(--primary); font-weight: 700; font-size: 1.3rem; margin-bottom: 1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .btn-add-cart { 
+            width: 100%; 
+            padding: 0.8rem; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s;
+        }
+        .btn-add-cart:hover { background: var(--primary-dark); }
+        
         .about { padding: 4rem 5%; background: rgba(255, 255, 255, 0.1); }
-        .about-content { max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem; border-radius: 30px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .about-content { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            text-align: center; 
+            padding: 3rem; 
+            border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
         .about h2 { font-size: 2rem; margin-bottom: 1.5rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .about p { color: #fff; line-height: 1.8; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
         .contact { padding: 4rem 5%; background: rgba(255, 255, 255, 0.1); }
-        .contact-content { max-width: 600px; margin: 0 auto; text-align: center; padding: 3rem; border-radius: 30px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .contact-content { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            text-align: center; 
+            padding: 3rem; 
+            border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
         .contact h2 { font-size: 2rem; margin-bottom: 2rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .contact-item { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.5rem 0; color: #fff; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        .contact-item span { font-size: 1.5rem; }
         .contact-item a { color: #fff; text-decoration: none; transition: color 0.3s; }
         .contact-item a:hover { color: var(--primary); }
-        .product-info { padding: 1.5rem; color: #fff; }
-        .product-info h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .price { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
-        .cta { padding: 4rem 5%; background: rgba(74, 144, 164, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); text-align: center; color: var(--light); }
-        .cta h2 { margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .cta p { margin-bottom: 2rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .cta { padding: 4rem 5%; background: rgba(74, 144, 164, 0.6); backdrop-filter: blur(10px); text-align: center; color: var(--light); }
         .btn-secondary { background: var(--light); color: var(--accent); }
         .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        footer { padding: 2rem 5%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--light); text-align: center; }
-        @media (max-width: 768px) { .hero h1 { font-size: 2rem; } .nav-links { display: none; } }
+        
+        footer { padding: 2rem 5%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); color: var(--light); text-align: center; }
+        
+        .floating-cart {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 140, 148, 0.5);
+            z-index: 999;
+            transition: transform 0.3s;
+        }
+        .floating-cart:hover { transform: scale(1.1); }
+        .floating-cart .cart-count {
+            background: white;
+            color: var(--primary);
+            border-radius: 50%;
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transform: translateX(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.success { background: #27ae60; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-content { padding: 2rem 1.5rem; margin: 0 1rem; }
+            .nav-links { display: none; }
+            .mobile-menu { display: flex; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .product-image { height: 120px; font-size: 3rem; }
+            .product-info { padding: 1rem; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .floating-cart { bottom: 1rem; right: 1rem; padding: 0.8rem 1.2rem; }
+            .toast { right: 1rem; bottom: 5rem; }
+        }
+        @media (max-width: 480px) {
+            .product-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
     <nav>
-        <div class="logo">🐱 Purrfect Picks</div>
+        <div class="logo" onclick="window.location.href='/'">🐱 Purrfect Picks</div>
         <ul class="nav-links">
-            <li><a href="#features">Features</a></li>
             <li><a href="#products">Products</a></li>
-            <li><a href="#about">About</a></li>
+            <li><a href="/about">About</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="/login">Admin</a></li>
         </ul>
+        <div class="mobile-menu" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
     </nav>
 
     <section class="hero">
@@ -112,50 +233,9 @@
         </div>
     </section>
 
-    <section class="features" id="features">
-        <h2>Why Choose Purrfect Picks?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🚚</div>
-                <h3>Free Shipping</h3>
-                <p>On orders over $30</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">✨</div>
-                <h3>Premium Quality</h3>
-                <p>Safe & durable materials</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💬</div>
-                <h3>24/7 Support</h3>
-                <p>We love to help!</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">↩️</div>
-                <h3>Easy Returns</h3>
-                <p>30-day return policy</p>
-            </div>
-        </div>
-    </section>
-
     <section class="products" id="products">
         <h2>Trending Products</h2>
-        <div class="product-grid" id="productGrid">
-            <div class="product-card">
-                <div class="product-image">🛏️</div>
-                <div class="product-info">
-                    <h3>Cozy Cat Bed</h3>
-                    <div class="price">$29.99</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="about" id="about">
-        <div class="about-content">
-            <h2>About Purrfect Picks</h2>
-            <p>At Purrfect Picks, we believe every cat deserves the best. Founded by cat lovers, our mission is to provide premium-quality accessories that keep your feline friends happy, healthy, and entertained.</p>
-        </div>
+        <div class="product-grid" id="productGrid"></div>
     </section>
 
     <section class="contact" id="contact">
@@ -186,6 +266,14 @@
         <p>&copy; 2026 Purrfect Picks. Made with ❤️ for cats everywhere.</p>
     </footer>
 
+    <div class="floating-cart" onclick="window.location.href='/cart'">
+        <span>🛒</span>
+        <span>Cart</span>
+        <div class="cart-count" id="cartCount">0</div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
@@ -201,24 +289,73 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        db.ref('products').on('value', (snapshot) => {
-            const products = snapshot.val();
-            const container = document.getElementById('productGrid');
-            
-            if (!products || Object.keys(products).length === 0) {
-                return;
-            }
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = '✅ ' + message;
+            toast.className = 'toast success show';
+            setTimeout(() => toast.className = 'toast', 2500);
+        }
 
-            container.innerHTML = Object.values(products).map(product => `
-                <div class="product-card">
-                    <div class="product-image">${product.icon}</div>
-                    <div class="product-info">
-                        <h3>${product.name}</h3>
-                        <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
+        function loadProducts() {
+            db.ref('products').on('value', (snapshot) => {
+                const products = snapshot.val();
+                const container = document.getElementById('productGrid');
+                
+                if (!products || Object.keys(products).length === 0) {
+                    container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">No products available yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = Object.entries(products).map(([id, product]) => `
+                    <div class="product-card" onclick="window.location.href='/product?id=${id}'" style="cursor: pointer;">
+                        <div class="product-image">${product.icon}</div>
+                        <div class="product-info">
+                            <h3>${product.name}</h3>
+                            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${product.name}', '${product.price}', '${product.icon}')">
+                                🛒 Add to Cart
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        });
+                `).join('');
+            });
+        }
+
+        function addToCart(name, price, icon) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ name, price: parseFloat(price), icon, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showToast(`${name} added to cart!`);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function toggleMenu() {
+            const nav = document.querySelector('.nav-links');
+            nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+            nav.style.flexDirection = 'column';
+            nav.style.position = 'absolute';
+            nav.style.top = '70px';
+            nav.style.left = '0';
+            nav.style.right = '0';
+            nav.style.background = 'rgba(255,255,255,0.95)';
+            nav.style.padding = '1rem';
+            nav.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+            nav.querySelectorAll('a').forEach(a => a.style.color = '#2D3436');
+        }
+
+        updateCartCount();
+        loadProducts();
     </script>
 </body>
 </html>

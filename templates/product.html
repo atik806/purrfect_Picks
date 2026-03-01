@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Purrfect Picks</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FF8C94;
+            --primary-dark: #ff6b78;
+            --accent: #4A90A4;
+            --dark: #2D3436;
+            --light: #FFFFFF;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/images/image.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: #fff; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateX(-5px); }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        .product-image span {
+            font-size: 10rem;
+        }
+        
+        .product-details h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .product-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .product-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        
+        .quantity-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quantity-section label {
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem;
+            border-radius: 25px;
+        }
+        
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .qty-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
+        
+        .qty-value {
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--light);
+            width: 100%;
+            text-align: center;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 140, 148, 0.4);
+        }
+        
+        .features-list {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        .features-list h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .features-list ul {
+            list-style: none;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .features-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        
+        .not-found {
+            text-align: center;
+            padding: 4rem;
+            color: #fff;
+        }
+        .not-found h2 { margin-bottom: 1rem; }
+
+        @media (max-width: 768px) {
+            .product-card { grid-template-columns: 1fr; padding: 1.5rem; }
+            .product-image span { font-size: 6rem; }
+            .product-details h1 { font-size: 1.5rem; }
+            .product-price { font-size: 2rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo" onclick="window.location.href='/'">🐱 Purrfect Picks</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#products">Products</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/#contact">Contact</a></li>
+            <li><a href="/login">Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <a href="/" class="back-btn">← Back to Products</a>
+        
+        <div id="productContent">
+            <div class="loading">Loading product...</div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
+            authDomain: "catproduct-f6852.firebaseapp.com",
+            databaseURL: "https://catproduct-f6852-default-rtdb.firebaseio.com",
+            projectId: "catproduct-f6852",
+            storageBucket: "catproduct-f6852.firebasestorage.app",
+            messagingSenderId: "200540639100",
+            appId: "1:200540639100:web:25190faf57c90210329ef9",
+            measurementId: "G-83ZTP8EC0H"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        let currentQuantity = 1;
+        let currentProduct = null;
+
+        function loadProduct() {
+            if (!productId) {
+                document.getElementById('productContent').innerHTML = `
+                    <div class="not-found">
+                        <h2>Product not found</h2>
+                        <a href="/" class="btn btn-primary" style="width: auto;">Back to Home</a>
+                    </div>`;
+                return;
+            }
+
+            db.ref('products').child(productId).on('value', (snapshot) => {
+                const product = snapshot.val();
+                const container = document.getElementById('productContent');
+                
+                if (!product) {
+                    container.innerHTML = `
+                        <div class="not-found">
+                            <h2>Product not found</h2>
+                            <a href="/" class="btn btn-primary" style="width: auto;">Back to Home</a>
+                        </div>`;
+                    return;
+                }
+
+                currentProduct = { ...product, id: productId };
+                
+                container.innerHTML = `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <span>${product.icon}</span>
+                        </div>
+                        <div class="product-details">
+                            <h1>${product.name}</h1>
+                            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            
+                            <div class="product-meta">
+                                <span class="meta-tag">📦 In Stock</span>
+                                <span class="meta-tag">🚚 Free Shipping over $30</span>
+                                <span class="meta-tag">↩️ 30-Day Returns</span>
+                            </div>
+                            
+                            <p class="product-description">
+                                ${product.description || `Elevate your cat's comfort with our premium ${product.name}. 
+                                Crafted with love and designed for your feline friend's happiness, 
+                                this high-quality accessory is perfect for cats of all ages. 
+                                Give your furry companion the gift they deserve!`}
+                            </p>
+                            
+                            <div class="quantity-section">
+                                <label>Quantity:</label>
+                                <div class="quantity-controls">
+                                    <button class="qty-btn" onclick="updateQuantity(-1)">−</button>
+                                    <span class="qty-value" id="qtyValue">1</span>
+                                    <button class="qty-btn" onclick="updateQuantity(1)">+</button>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="addToCart()">
+                                🛒 Add to Cart - $${(product.price * currentQuantity).toFixed(2)}
+                            </button>
+                            
+                            <div class="features-list">
+                                <h3>✨ Product Features</h3>
+                                <ul>
+                                    <li>🐱 Premium quality materials</li>
+                                    <li>🛡️ Safety tested</li>
+                                    <li>🌿 Eco-friendly</li>
+                                    <li>💝 Cat-approved!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function updateQuantity(change) {
+            currentQuantity += change;
+            if (currentQuantity < 1) currentQuantity = 1;
+            document.getElementById('qtyValue').textContent = currentQuantity;
+            
+            if (currentProduct) {
+                const total = (currentProduct.price * currentQuantity).toFixed(2);
+                document.querySelector('.btn-primary').innerHTML = `🛒 Add to Cart - $${total}`;
+            }
+        }
+
+        function addToCart() {
+            if (!currentProduct) return;
+            
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existing = cart.find(item => item.name === currentProduct.name);
+            
+            if (existing) {
+                existing.quantity += currentQuantity;
+            } else {
+                cart.push({
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    icon: currentProduct.icon,
+                    quantity: currentQuantity
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${currentProduct.name} added to cart!`);
+            window.location.href = '/cart';
+        }
+
+        loadProduct();
+    </script>
+</body>
+</html>
