@@ -1,12 +1,13 @@
-# Purrfect Picks - Cat Accessories Landing Page
+# Purrfect Picks - Cat Accessories
 
-A Flask-based landing page for cat accessories with Firebase database integration and admin panel.
+A Flask-based landing page for cat accessories with Firebase Realtime Database and admin panel.
 
 ## Tech Stack
 
 - **Frontend:** HTML5, CSS3 (Glassmorphism design)
 - **Backend:** Python Flask
-- **Database:** Firebase Firestore
+- **Database:** Firebase Realtime Database
+- **Authentication:** Firebase Authentication
 
 ## Setup
 
@@ -17,38 +18,55 @@ A Flask-based landing page for cat accessories with Firebase database integratio
 
 2. **Configure Firebase:**
    - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project
-   - Enable Firestore Database
-   - Go to Project Settings > Service Accounts
-   - Generate new private key
-   - Replace `firebase-config.json` with your credentials
+   - Select project: `catproduct-f6852`
+   - Enable **Authentication** > Email/Password
+   - Enable **Realtime Database** > Start in test mode
 
-3. **Run the server:**
+3. **Create admin user:**
+   - Go to Authentication > Add user
+   - Enter your admin email and password
+
+4. **Run the server:**
    ```bash
-   cd "cat web"
    python app.py
    ```
 
-4. Open `http://localhost:5000` in your browser
+5. Open `http://localhost:5000`
 
-## Admin Panel
+## Routes
 
-Access the admin panel at `http://localhost:5000/admin` to:
+| Route | Description |
+|-------|-------------|
+| `/` | Main website |
+| `/login` | Admin login |
+| `/admin` | Admin panel (protected) |
+
+## Admin Panel Features
+
 - Add new products
 - Edit existing products
 - Delete products
+- Logout
 
 ## Project Structure
 
 ```
 cat web/
-├── app.py                  # Flask backend with Firebase integration
-├── firebase-config.json    # Firebase credentials (add your own)
-├── requirements.txt       # Python dependencies
+├── app.py                  # Flask backend
+├── firebase-config.json    # Firebase config (not committed)
+├── firebase-rule.md        # Firebase rules guide
+├── requirements.txt        # Python dependencies
+├── .gitignore             # Git ignore rules
 ├── static/
 │   └── images/
 │       └── image.jpg
 └── templates/
     ├── index.html         # Main website
-    └── admin.html         # Admin panel
+    ├── admin.html         # Admin panel
+    └── login.html         # Admin login
 ```
+
+## Security
+
+- Add `firebase-config.json` and any sensitive files to `.gitignore`
+- For production, update Firebase rules to require authentication
