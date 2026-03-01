@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Purrfect Picks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FF8C94;
+            --secondary: #FFF5F5;
+            --accent: #4A90A4;
+            --dark: #2D3436;
+            --light: #FFFFFF;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 { color: var(--dark); font-size: 1.8rem; }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background: var(--primary); color: var(--light); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 140, 148, 0.5); }
+        .admin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .card h2 { color: var(--dark); margin-bottom: 1.5rem; font-size: 1.4rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 600; }
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        .product-list { display: grid; gap: 1rem; }
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--secondary);
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+        .product-item:hover { transform: translateX(5px); }
+        .product-icon { font-size: 2.5rem; width: 60px; text-align: center; }
+        .product-details { flex: 1; }
+        .product-details h3 { color: var(--dark); font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .product-details .price { color: var(--accent); font-weight: 700; }
+        .product-actions { display: flex; gap: 0.5rem; }
+        .btn-edit { background: var(--accent); color: var(--light); padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .btn-delete { background: var(--danger); color: var(--light); padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .btn-save { background: var(--success); color: var(--light); width: 100%; margin-top: 1rem; }
+        .empty-state { text-align: center; padding: 3rem; color: #999; }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐱 Admin Panel - Purrfect Picks</h1>
+            <div>
+                <a href="/" class="btn btn-primary" style="margin-right: 0.5rem;">View Website</a>
+                <button onclick="logout()" class="btn btn-delete">Logout</button>
+            </div>
+        </header>
+        <div class="admin-grid">
+            <div class="card">
+                <h2>Add / Edit Product</h2>
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="productName" required placeholder="e.g., Cozy Cat Bed">
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="productPrice" step="0.01" required placeholder="e.g., 29.99">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon (Emoji)</label>
+                        <input type="text" id="productIcon" required placeholder="🛏️" value="🛏️">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="productDescription" rows="3" placeholder="Product description..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-save" id="saveBtn">Add Product</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2>Existing Products</h2>
+                <div id="productList" class="product-list">
+                    <div class="empty-state">Loading products...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
+            authDomain: "catproduct-f6852.firebaseapp.com",
+            databaseURL: "https://catproduct-f6852-default-rtdb.firebaseio.com",
+            projectId: "catproduct-f6852",
+            storageBucket: "catproduct-f6852.firebasestorage.app",
+            messagingSenderId: "200540639100",
+            appId: "1:200540639100:web:25190faf57c90210329ef9",
+            measurementId: "G-83ZTP8EC0H"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '/login';
+            } else {
+                const adminData = sessionStorage.getItem('adminUser');
+                if (!adminData) {
+                    window.location.href = '/login';
+                }
+            }
+        });
+
+        function logout() {
+            auth.signOut().then(() => {
+                sessionStorage.removeItem('adminUser');
+                window.location.href = '/login';
+            });
+        }
+
+        function loadProducts() {
+            db.ref('products').on('value', (snapshot) => {
+                const products = snapshot.val();
+                const container = document.getElementById('productList');
+                
+                if (!products) {
+                    container.innerHTML = '<div class="empty-state">No products yet. Add one to get started!</div>';
+                    return;
+                }
+
+                container.innerHTML = Object.entries(products).map(([id, product]) => `
+                    <div class="product-item">
+                        <div class="product-icon">${product.icon}</div>
+                        <div class="product-details">
+                            <h3>${product.name}</h3>
+                            <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-edit" onclick="editProduct('${id}', '${product.name}', '${product.price}', '${product.icon}', '${product.description || ''}')">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteProduct('${id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productId = document.getElementById('productId').value;
+            const product = {
+                name: document.getElementById('productName').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                icon: document.getElementById('productIcon').value,
+                description: document.getElementById('productDescription').value
+            };
+
+            try {
+                if (productId) {
+                    await db.ref('products').child(productId).update(product);
+                } else {
+                    await db.ref('products').push(product);
+                }
+                showToast('Product saved successfully!', 'success');
+                resetForm();
+            } catch (error) {
+                showToast('Error saving product', 'error');
+            }
+        });
+
+        function editProduct(id, name, price, icon, description) {
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = name;
+            document.getElementById('productPrice').value = price;
+            document.getElementById('productIcon').value = icon;
+            document.getElementById('productDescription').value = description;
+            document.getElementById('saveBtn').textContent = 'Update Product';
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            try {
+                await db.ref('products').child(id).remove();
+                showToast('Product deleted!', 'success');
+            } catch (error) {
+                showToast('Error deleting product', 'error');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('productId').value = '';
+            document.getElementById('productForm').reset();
+            document.getElementById('productIcon').value = '🛏️';
+            document.getElementById('saveBtn').textContent = 'Add Product';
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.className = 'toast', 3000);
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>

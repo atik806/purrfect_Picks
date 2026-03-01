@@ -1,51 +1,54 @@
 # Purrfect Picks - Cat Accessories Landing Page
 
-A Flask-based landing page for cat accessories built with HTML, CSS, and Python.
-
-## 🚧 Prototype Status
-
-> **Note:** This is currently a prototype. Updates will be coming soon!
+A Flask-based landing page for cat accessories with Firebase database integration and admin panel.
 
 ## Tech Stack
 
 - **Frontend:** HTML5, CSS3 (Glassmorphism design)
 - **Backend:** Python Flask
+- **Database:** Firebase Firestore
 
 ## Setup
 
-1. Install Flask:
+1. **Install dependencies:**
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
 
-2. Run the server:
+2. **Configure Firebase:**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project
+   - Enable Firestore Database
+   - Go to Project Settings > Service Accounts
+   - Generate new private key
+   - Replace `firebase-config.json` with your credentials
+
+3. **Run the server:**
    ```bash
-   cd cat web
+   cd "cat web"
    python app.py
    ```
 
-3. Open `http://localhost:5000` in your browser
+4. Open `http://localhost:5000` in your browser
 
-## Features
+## Admin Panel
 
-- Responsive glassmorphism design
-- Product showcase
-- About section
-- Contact information
-- Mobile-friendly
+Access the admin panel at `http://localhost:5000/admin` to:
+- Add new products
+- Edit existing products
+- Delete products
 
 ## Project Structure
 
 ```
 cat web/
-├── app.py
+├── app.py                  # Flask backend with Firebase integration
+├── firebase-config.json    # Firebase credentials (add your own)
+├── requirements.txt       # Python dependencies
 ├── static/
 │   └── images/
 │       └── image.jpg
 └── templates/
-    └── index.html
+    ├── index.html         # Main website
+    └── admin.html         # Admin panel
 ```
-
-## License
-
-MIT

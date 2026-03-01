@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Purrfect Picks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FF8C94;
+            --accent: #4A90A4;
+            --dark: #2D3436;
+            --light: #FFFFFF;
+            --danger: #e74c3c;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h1 {
+            color: var(--dark);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .login-card .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .form-group { margin-bottom: 1.2rem; text-align: left; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--dark); font-weight: 600; }
+        input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .btn-primary { background: var(--primary); color: var(--light); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 140, 148, 0.5); }
+        .error { color: var(--danger); margin-top: 1rem; display: none; }
+        .back-link { margin-top: 1.5rem; color: var(--accent); text-decoration: none; display: block; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>🐱 Admin Login</h1>
+        <p class="subtitle">Purrfect Picks Admin Panel</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="admin@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="Enter password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <p class="error" id="errorMsg"></p>
+        </form>
+        
+        <a href="/" class="back-link">← Back to Website</a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
+            authDomain: "catproduct-f6852.firebaseapp.com",
+            databaseURL: "https://catproduct-f6852-default-rtdb.firebaseio.com",
+            projectId: "catproduct-f6852",
+            storageBucket: "catproduct-f6852.firebasestorage.app",
+            messagingSenderId: "200540639100",
+            appId: "1:200540639100:web:25190faf57c90210329ef9",
+            measurementId: "G-83ZTP8EC0H"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                sessionStorage.setItem('adminUser', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email
+                }));
+                window.location.href = '/admin';
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
