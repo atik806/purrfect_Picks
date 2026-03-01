@@ -1,9 +1,12 @@
+import os
 from flask import Flask, render_template
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(
     __name__,
-    template_folder="../templates",
-    static_folder="../static"
+    template_folder=os.path.join(basedir, "..", "templates"),
+    static_folder=os.path.join(basedir, "..", "static")
 )
 
 @app.route("/")
@@ -33,3 +36,10 @@ def admin():
 @app.route("/product")
 def product():
     return render_template("product.html")
+
+# Vercel serverless function handler
+def handler(request):
+    return app(request.environ, request.start_response)
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
