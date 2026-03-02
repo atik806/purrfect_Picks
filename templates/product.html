@@ -306,15 +306,15 @@
                 container.innerHTML = `
                     <div class="product-card">
                         <div class="product-image">
-                            <span>${product.icon}</span>
+                            ${product.imageUrl ? `<img src="${product.imageUrl}" style="max-width: 100%; max-height: 300px; border-radius: 15px; object-fit: contain;">` : `<span>${product.icon}</span>`}
                         </div>
                         <div class="product-details">
                             <h1>${product.name}</h1>
-                            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <div class="product-price">৳${parseFloat(product.price).toFixed(0)}</div>
                             
                             <div class="product-meta">
                                 <span class="meta-tag">📦 In Stock</span>
-                                <span class="meta-tag">🚚 Free Shipping over $30</span>
+                                <span class="meta-tag">🚚 Free Shipping over ৳2500</span>
                                 <span class="meta-tag">↩️ 30-Day Returns</span>
                             </div>
                             
@@ -335,7 +335,7 @@
                             </div>
                             
                             <button class="btn btn-primary" onclick="addToCart()">
-                                🛒 Add to Cart - $${(product.price * currentQuantity).toFixed(2)}
+                                🛒 Add to Cart - ৳${(product.price * currentQuantity).toFixed(0)}
                             </button>
                             
                             <div class="features-list">
@@ -358,8 +358,8 @@
             document.getElementById('qtyValue').textContent = currentQuantity;
             
             if (currentProduct) {
-                const total = (currentProduct.price * currentQuantity).toFixed(2);
-                document.querySelector('.btn-primary').innerHTML = `🛒 Add to Cart - $${total}`;
+                const total = (currentProduct.price * currentQuantity).toFixed(0);
+                document.querySelector('.btn-primary').innerHTML = `🛒 Add to Cart - ৳${total}`;
             }
         }
 
@@ -376,6 +376,7 @@
                     name: currentProduct.name,
                     price: currentProduct.price,
                     icon: currentProduct.icon,
+                    imageUrl: currentProduct.imageUrl || '',
                     quantity: currentQuantity
                 });
             }

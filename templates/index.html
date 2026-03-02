@@ -308,11 +308,11 @@
 
                 container.innerHTML = Object.entries(products).map(([id, product]) => `
                     <div class="product-card" onclick="window.location.href='/product?id=${id}'" style="cursor: pointer;">
-                        <div class="product-image">${product.icon}</div>
+                        <div class="product-image">${product.imageUrl ? `<img src="${product.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : product.icon}</div>
                         <div class="product-info">
                             <h3>${product.name}</h3>
-                            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
-                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${product.name}', '${product.price}', '${product.icon}')">
+                            <div class="product-price">৳${parseFloat(product.price).toFixed(0)}</div>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${product.name}', '${product.price}', '${product.icon}', '${product.imageUrl || ''}')">
                                 🛒 Add to Cart
                             </button>
                         </div>
@@ -321,13 +321,13 @@
             });
         }
 
-        function addToCart(name, price, icon) {
+        function addToCart(name, price, icon, imageUrl = '') {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const existing = cart.find(item => item.name === name);
             if (existing) {
                 existing.quantity += 1;
             } else {
-                cart.push({ name, price: parseFloat(price), icon, quantity: 1 });
+                cart.push({ name, price: parseFloat(price), icon, imageUrl, quantity: 1 });
             }
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();

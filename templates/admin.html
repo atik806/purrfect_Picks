@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-storage-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -240,8 +241,14 @@
                             <input type="text" id="productName" required placeholder="e.g., Cozy Cat Bed">
                         </div>
                         <div class="form-group">
-                            <label>Price ($)</label>
-                            <input type="number" id="productPrice" step="0.01" required placeholder="e.g., 29.99">
+                            <label>Price (৳)</label>
+                            <input type="number" id="productPrice" step="1" required placeholder="e.g., 2500">
+                        </div>
+                        <div class="form-group">
+                            <label>Product Image</label>
+                            <input type="file" id="productImage" accept="image/*">
+                            <input type="hidden" id="productImageUrl">
+                            <div id="imagePreview" style="margin-top: 10px;"></div>
                         </div>
                         <div class="form-group">
                             <label>Icon (Emoji)</label>
@@ -290,6 +297,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        const storage = firebase.storage();
 
         auth.onAuthStateChanged((user) => {
             if (!user) {
@@ -321,13 +329,13 @@
 
                 container.innerHTML = Object.entries(products).map(([id, product]) => `
                     <div class="product-item">
-                        <div class="product-icon">${product.icon}</div>
+                        <div class="product-icon">${product.imageUrl ? `<img src="${product.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px;">` : product.icon}</div>
                         <div class="product-details">
                             <h3>${product.name}</h3>
-                            <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <div class="price">৳${parseFloat(product.price).toFixed(0)}</div>
                         </div>
                         <div class="product-actions">
-                            <button class="btn btn-edit" onclick="editProduct('${id}', '${product.name}', '${product.price}', '${product.icon}', '${product.description || ''}')">Edit</button>
+                            <button class="btn btn-edit" onclick="editProduct('${id}', '${product.name}', '${product.price}', '${product.icon}', '${product.description || ''}', '${product.imageUrl || ''}')">Edit</button>
                             <button class="btn btn-delete" onclick="deleteProduct('${id}')">Delete</button>
                         </div>
                     </div>
@@ -339,11 +347,22 @@
             e.preventDefault();
             
             const productId = document.getElementById('productId').value;
+            const imageFile = document.getElementById('productImage').files[0];
+            let imageUrl = document.getElementById('productImageUrl').value;
+            
+            if (imageFile) {
+                showToast('Uploading image...', 'success');
+                const storageRef = storage.ref('products/' + Date.now() + '_' + imageFile.name);
+                await storageRef.put(imageFile);
+                imageUrl = await storageRef.getDownloadURL();
+            }
+            
             const product = {
                 name: document.getElementById('productName').value,
                 price: parseFloat(document.getElementById('productPrice').value),
                 icon: document.getElementById('productIcon').value,
-                description: document.getElementById('productDescription').value
+                description: document.getElementById('productDescription').value,
+                imageUrl: imageUrl
             };
 
             try {
@@ -359,12 +378,18 @@
             }
         });
 
-        function editProduct(id, name, price, icon, description) {
+        function editProduct(id, name, price, icon, description, imageUrl = '') {
             document.getElementById('productId').value = id;
             document.getElementById('productName').value = name;
             document.getElementById('productPrice').value = price;
             document.getElementById('productIcon').value = icon;
             document.getElementById('productDescription').value = description;
+            document.getElementById('productImageUrl').value = imageUrl || '';
+            if (imageUrl) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${imageUrl}" style="max-width: 100px; border-radius: 10px;">`;
+            } else {
+                document.getElementById('imagePreview').innerHTML = '';
+            }
             document.getElementById('saveBtn').textContent = 'Update Product';
         }
 
@@ -382,8 +407,21 @@
             document.getElementById('productId').value = '';
             document.getElementById('productForm').reset();
             document.getElementById('productIcon').value = '🛏️';
+            document.getElementById('productImageUrl').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('saveBtn').textContent = 'Add Product';
         }
+
+        document.getElementById('productImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" style="max-width: 100px; border-radius: 10px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
         function showToast(message, type) {
             const toast = document.getElementById('toast');
@@ -422,7 +460,7 @@
                     const itemsHtml = order.items.map(item => 
                         `<div class="order-item">
                             <span>${item.icon} ${item.name} ×${item.quantity}</span>
-                            <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                            <span>৳${(item.price * item.quantity).toFixed(0)}</span>
                         </div>`
                     ).join('');
                     
@@ -445,7 +483,7 @@
                                 ${itemsHtml}
                             </div>
                             <div class="order-footer">
-                                <span class="order-total">Total: $${order.total.toFixed(2)}</span>
+                                <span class="order-total">Total: ৳${order.total.toFixed(0)}</span>
                                 <div class="order-actions">
                                     <button class="btn-status" style="background: #3498db;" onclick="updateOrderStatus('${id}', 'confirmed')">✓ Confirm</button>
                                     <button class="btn-status" style="background: #9b59b6;" onclick="updateOrderStatus('${id}', 'shipped')">🚚 Ship</button>
