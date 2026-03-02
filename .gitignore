@@ -1,7 +1,7 @@
 # Firebase
 firebase-config.json
 firebase-adminsdk.json
-*.json (if contains sensitive data)
+*.json
 
 # Python
 __pycache__/
@@ -12,20 +12,38 @@ __pycache__/
 venv/
 env/
 .venv/
+ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
 
 # OS
 .DS_Store
 Thumbs.db
+*.tmp
 
 # Environment
 .env
 .env.local
+.env.*.local
 
 # Logs
 *.log
+logs/
+
+# Security
+*.pem
+*.key
+*.cert
+
+# Database
+*.db
+*.sqlite
+*.sqlite3

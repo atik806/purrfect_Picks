@@ -92,5 +92,17 @@ cat web/
 
 ## Security
 
-- Add `firebase-config.json` and any sensitive files to `.gitignore`
-- For production, update Firebase rules to require authentication
+⚠️ **Important Security Notes:**
+
+1. **Environment Variables**: Copy `.env.example` to `.env` and update with your values
+2. **Secret Key**: Generate a strong SECRET_KEY for production:
+   ```bash
+   python -c "import secrets; print(secrets.token_hex(32))"
+   ```
+3. **Firebase Rules**: Update Firebase Realtime Database rules (see `firebase-rule.md`)
+4. **HTTPS Only**: Always use HTTPS in production
+5. **Never Commit**: Never commit `.env` or sensitive credentials to git
+
+For detailed security information, see:
+- `SECURITY.md` - Security improvements and recommendations
+- `SECURITY_CHECKLIST.md` - Complete security checklist

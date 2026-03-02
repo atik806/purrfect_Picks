@@ -1,5 +1,9 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, session, redirect, url_for
+from functools import wraps
+from dotenv import load_dotenv
+
+load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -8,6 +12,29 @@ app = Flask(
     template_folder=os.path.join(basedir, "..", "templates"),
     static_folder=os.path.join(basedir, "..", "static")
 )
+
+# Security configurations
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32))
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Security headers
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin_authenticated' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route("/")
 def home():
@@ -30,6 +57,7 @@ def checkout():
     return render_template("checkout.html")
 
 @app.route("/admin")
+@admin_required
 def admin():
     return render_template("admin.html")
 

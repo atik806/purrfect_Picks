@@ -299,21 +299,19 @@
         const db = firebase.database();
         const storage = firebase.storage();
 
+        // Check authentication on page load
         auth.onAuthStateChanged((user) => {
             if (!user) {
                 window.location.href = '/login';
-            } else {
-                const adminData = sessionStorage.getItem('adminUser');
-                if (!adminData) {
-                    window.location.href = '/login';
-                }
             }
         });
 
         function logout() {
             auth.signOut().then(() => {
-                sessionStorage.removeItem('adminUser');
-                window.location.href = '/login';
+                // Clear server-side session
+                fetch('/logout').then(() => {
+                    window.location.href = '/login';
+                });
             });
         }
 

@@ -152,11 +152,24 @@
                 const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                sessionStorage.setItem('adminUser', JSON.stringify({
-                    uid: user.uid,
-                    email: user.email
-                }));
-                window.location.href = '/admin';
+                // Get Firebase ID token
+                const idToken = await user.getIdToken();
+                
+                // Send token to backend for verification
+                const response = await fetch('/api/verify-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ idToken: idToken })
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/admin';
+                } else {
+                    errorMsg.textContent = 'Authentication failed. Please try again.';
+                    errorMsg.style.display = 'block';
+                }
             } catch (error) {
                 errorMsg.textContent = error.message;
                 errorMsg.style.display = 'block';
