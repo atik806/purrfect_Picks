@@ -20,7 +20,7 @@ pip install -r requirements.txt
 
 Go to [Firebase Console](https://console.firebase.google.com/) → Your Project → Realtime Database → Rules
 
-Replace with:
+Replace with these **WORKING** rules:
 ```json
 {
   "rules": {
@@ -32,12 +32,17 @@ Replace with:
       ".read": "auth != null",
       ".write": true,
       "$orderId": {
-        ".validate": "newData.hasChildren(['items', 'customer', 'total', 'status'])"
+        ".validate": "newData.hasChildren(['items', 'customer', 'total', 'paymentMethod', 'status', 'createdAt'])"
       }
     }
   }
 }
 ```
+
+**Important:** 
+- Do NOT use `auth.token.admin === true` - your app doesn't set custom claims
+- Use `auth != null` instead - this checks if user is logged in
+- Click "Publish" after pasting the rules
 
 ### 4. Test Locally
 ```bash

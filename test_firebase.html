@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Test</title>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Connection Test</h1>
+    
+    <div class="test-box">
+        <h2>1. Firebase Initialization</h2>
+        <div id="initStatus" class="status info">Testing...</div>
+    </div>
+
+    <div class="test-box">
+        <h2>2. Read Products Test</h2>
+        <button onclick="testReadProducts()">Test Read Products</button>
+        <div id="readStatus" class="status info">Click button to test</div>
+        <pre id="productsData"></pre>
+    </div>
+
+    <div class="test-box">
+        <h2>3. Write Products Test (Requires Login)</h2>
+        <button onclick="testWriteProduct()">Test Write Product</button>
+        <div id="writeStatus" class="status info">Click button to test</div>
+    </div>
+
+    <div class="test-box">
+        <h2>4. Database Rules Check</h2>
+        <div id="rulesInfo" class="status info">
+            <strong>Expected Rules:</strong><br>
+            Products: .read = true, .write = "auth != null"<br>
+            Orders: .read = "auth != null", .write = true
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSISSs8E8pylb7YUVMSz5PnJXDvM9ivTA",
+            authDomain: "catproduct-f6852.firebaseapp.com",
+            databaseURL: "https://catproduct-f6852-default-rtdb.firebaseio.com",
+            projectId: "catproduct-f6852",
+            storageBucket: "catproduct-f6852.firebasestorage.app",
+            messagingSenderId: "200540639100",
+            appId: "1:200540639100:web:25190faf57c90210329ef9",
+            measurementId: "G-83ZTP8EC0H"
+        };
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            document.getElementById('initStatus').className = 'status success';
+            document.getElementById('initStatus').textContent = '✅ Firebase initialized successfully!';
+            
+            // Auto-test read on load
+            setTimeout(testReadProducts, 1000);
+        } catch (error) {
+            document.getElementById('initStatus').className = 'status error';
+            document.getElementById('initStatus').textContent = '❌ Firebase initialization failed: ' + error.message;
+        }
+
+        function testReadProducts() {
+            const statusDiv = document.getElementById('readStatus');
+            const dataDiv = document.getElementById('productsData');
+            
+            statusDiv.className = 'status info';
+            statusDiv.textContent = '⏳ Testing read access...';
+            
+            firebase.database().ref('products').once('value')
+                .then(snapshot => {
+                    const products = snapshot.val();
+                    
+                    if (products) {
+                        statusDiv.className = 'status success';
+                        statusDiv.textContent = `✅ Read successful! Found ${Object.keys(products).length} products`;
+                        dataDiv.textContent = JSON.stringify(products, null, 2);
+                    } else {
+                        statusDiv.className = 'status info';
+                        statusDiv.textContent = '⚠️ Read successful but no products found. Add products in admin panel.';
+                        dataDiv.textContent = 'No products in database';
+                    }
+                })
+                .catch(error => {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ Read failed: ' + error.message;
+                    dataDiv.textContent = 'Error: ' + error.code + '\n\n' + 
+                        'Possible causes:\n' +
+                        '1. Firebase rules are too restrictive\n' +
+                        '2. Database URL is incorrect\n' +
+                        '3. Network connection issue\n\n' +
+                        'Solution: Update Firebase rules to allow public read:\n' +
+                        '"products": { ".read": true }';
+                });
+        }
+
+        function testWriteProduct() {
+            const statusDiv = document.getElementById('writeStatus');
+            
+            statusDiv.className = 'status info';
+            statusDiv.textContent = '⏳ Testing write access...';
+            
+            const testProduct = {
+                name: 'Test Product ' + Date.now(),
+                price: 99,
+                icon: '🧪',
+                description: 'Test product for Firebase connection',
+                createdAt: new Date().toISOString()
+            };
+            
+            firebase.database().ref('products').push(testProduct)
+                .then(() => {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Write successful! Test product added. Check your database.';
+                    setTimeout(testReadProducts, 500);
+                })
+                .catch(error => {
+                    statusDiv.className = 'status error';
+                    
+                    if (error.code === 'PERMISSION_DENIED') {
+                        statusDiv.textContent = '❌ Write failed: Permission Denied\n\n' +
+                            'This is expected if you\'re not logged in.\n\n' +
+                            'Solutions:\n' +
+                            '1. Login at /login first, then try again\n' +
+                            '2. Or update Firebase rules to: "products": { ".write": true } (for testing only)';
+                    } else {
+                        statusDiv.textContent = '❌ Write failed: ' + error.message;
+                    }
+                });
+        }
+
+        // Check authentication status
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('writeStatus').innerHTML = 
+                    '<strong>✅ Logged in as: ' + user.email + '</strong><br>' +
+                    'You should be able to write products.';
+            } else {
+                document.getElementById('writeStatus').innerHTML = 
+                    '<strong>⚠️ Not logged in</strong><br>' +
+                    'Write test will fail unless you login first at <a href="/login">/login</a>';
+            }
+        });
+    </script>
+</body>
+</html>

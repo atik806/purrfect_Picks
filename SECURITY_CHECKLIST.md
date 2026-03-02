@@ -166,3 +166,6 @@ If you discover a security vulnerability:
 1. Do NOT open a public issue
 2. Email: [security contact email]
 3. Include detailed description and steps to reproduce
+
+
+

@@ -27,8 +27,8 @@ def set_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com"
+    # Temporarily disable CSP for debugging
+    # response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
 
 # Admin authentication decorator
@@ -88,6 +88,10 @@ def admin():
 @app.route("/product")
 def product():
     return render_template("product.html")
+
+@app.route("/test")
+def test_firebase():
+    return render_template("test_firebase.html")
 
 @app.route("/logout")
 def logout():
