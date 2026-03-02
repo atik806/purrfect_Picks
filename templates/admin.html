@@ -217,8 +217,8 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🐱 Admin Panel - Purrfect Picks</h1>
+<header>
+            <h1><img src="/static/images/logo.png" alt="Purrfect Picks" style="height: 40px;"></h1>
             <div>
                 <a href="/" class="btn btn-primary" style="margin-right: 0.5rem;">View Website</a>
                 <button onclick="logout()" class="btn btn-delete">Logout</button>
@@ -482,9 +482,10 @@
                             <div class="order-items">
                                 ${itemsHtml}
                             </div>
-                            <div class="order-footer">
+<div class="order-footer">
                                 <span class="order-total">Total: ৳${order.total.toFixed(0)}</span>
                                 <div class="order-actions">
+                                    <button class="btn-status" style="background: #e67e22;" onclick="downloadInvoice('${id}')">📥 Invoice</button>
                                     <button class="btn-status" style="background: #3498db;" onclick="updateOrderStatus('${id}', 'confirmed')">✓ Confirm</button>
                                     <button class="btn-status" style="background: #9b59b6;" onclick="updateOrderStatus('${id}', 'shipped')">🚚 Ship</button>
                                     <button class="btn-status" style="background: #27ae60;" onclick="updateOrderStatus('${id}', 'delivered')">✓ Delivered</button>
@@ -497,11 +498,63 @@
             });
         }
 
-        function updateOrderStatus(orderId, status) {
+function updateOrderStatus(orderId, status) {
             if (!confirm(`Mark order as ${status}?`)) return;
             db.ref('orders').child(orderId).update({ status: status })
                 .then(() => showToast(`Order marked as ${status}!`, 'success'))
                 .catch(() => showToast('Error updating order', 'error'));
+        }
+
+        function downloadInvoice(orderId) {
+            db.ref('orders').child(orderId).once('value', (snapshot) => {
+                const order = snapshot.val();
+                if (!order) return;
+
+                const orderDate = new Date(order.createdAt).toLocaleDateString();
+                const orderTime = new Date(order.createdAt).toLocaleTimeString();
+
+                let itemsList = order.items.map(item => 
+                    `${item.name} x ${item.quantity} = ৳${(item.price * item.quantity).toFixed(0)}`
+                ).join('\n');
+
+                const invoiceText = `
+╔══════════════════════════════════════════════════════════╗
+║                    🐱 PURRFECT PICKS                      ║
+║                    INVOICE / PACKING SLIP                 ║
+╠══════════════════════════════════════════════════════════╣
+║ Order ID: #${orderId.substring(0, 8).toUpperCase()}                                    
+║ Date: ${orderDate} ${orderTime}                              
+║ Status: ${order.status.toUpperCase()}                                           
+╠══════════════════════════════════════════════════════════╣
+║ CUSTOMER DETAILS                                         ║
+║ ─────────────────────────────────────────────────────── ║
+║ Name:    ${order.customer.name}                                 
+║ Phone:   ${order.customer.phone}                                  
+║ Address: ${order.customer.address}                               
+║ Payment: ${order.paymentMethod.toUpperCase()}                                      
+╠══════════════════════════════════════════════════════════╣
+║ ITEMS                                                    ║
+║ ─────────────────────────────────────────────────────── ║
+${itemsList.split('\n').map(item => '║ ' + item.padEnd(55) + '║').join('\n')}
+╠══════════════════════════════════════════════════════════╣
+║                    TOTAL: ৳${order.total.toFixed(0)}                         
+╠══════════════════════════════════════════════════════════╣
+║              Thank you for your order!                   ║
+║              www.purrfectpicks.com                      ║
+╚══════════════════════════════════════════════════════════╝
+                `;
+
+                const blob = new Blob([invoiceText], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `invoice_${orderId.substring(0, 8).toUpperCase()}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showToast('Invoice downloaded!', 'success');
+            });
         }
 
         loadProducts();
